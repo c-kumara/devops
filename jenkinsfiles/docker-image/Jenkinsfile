@@ -1,0 +1,42 @@
+pipeline {
+    agent any 
+    environment {
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    }
+    stages { disca
+        stage('SCM Checkout') {
+            steps{
+            git url: 'https://github.com/c-kumara/docker-image.git', branch: 'release',
+            credentialsId: 'github'
+            }
+        }
+
+        stage('Build docker image') {
+            steps {  
+                sh 'docker build -t ckumara/docker-image:$BUILD_NUMBER .'
+            }
+        }
+        stage('login to dockerhub') {
+            steps{
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage('push image') {
+            steps{
+                sh 'docker push ckumara/docker-image:$BUILD_NUMBER'
+            }
+        }
+        stage('Mail send') {
+            steps{
+            mail to: "ckumara@kaleris.com",
+            subject: "Test Email",
+            body: "Test"
+            }
+        }      
+}
+post {
+        always {
+            sh 'docker logout'
+        }
+    }
+}
