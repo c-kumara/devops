@@ -34,9 +34,24 @@ pipeline {
             }
         }      
 }
-post {
-        always {
-            sh 'docker logout'
-        }
-    }
+
+            post 
+            {
+                success 
+                {
+                    //sendStagesBuildSummery("ckumara@kaleris.com" , "Success")
+                    sendStagesBuildSummery("ckumara@kaleris.com, "Success")
+                }
+                unstable 
+                { 
+                    //sendStagesBuildSummery("ckumara@kaleris.com" , "Unstable")
+                    sendStagesBuildSummery("ckumara@kaleris.com" , "Success")
+                }
+                failure 
+                { 
+                    //sendStagesBuildSummery("ckumara@kaleris.com" , "Failed")
+                    sendStagesBuildSummery("ckumara@kaleris.com" , "Success")
+                }
+            }
+
 }
